@@ -1,5 +1,5 @@
 
-const serverURL  = "ws://127.0.0.1:5050/api";
+const serverURL  = "ws://127.0.0.1:5050";
 const socket = new WebSocket(serverURL); // start connection
 
 let _letter = null;
@@ -20,27 +20,27 @@ function sendTurnRequest(){
     sendToServer(`turn;${letter}`);
 }
 
-function processMessage(msg){
+function processMsg(msg){
     if(msg.startsWith("start")){
-        processStartMessage(msg);
+        processStartMsg(msg);
     }else if(msg.startsWith("draw")){
-        processDrawMessage(msg);
+        processDrawMsg(msg);
     }else if(msg.startsWith("turn")){
-        processTurnMessage(msg);
+        processTurnMsg(msg);
     }else if(msg.startsWith("win")){
-        processWonMessage(msg);
+        processWonMsg(msg);
     }else if(msg.startsWith("tie")){
-        processTieMessage();
+        processTieMsg();
     }
 }
 
-function processStartMessage(msg){
+function processStartMsg(msg){
     _letter = msg.split(";")[1];
     drawBoard();
     setUpCanvas();
 }
 
-function processDrawMessage(msg){
+function processDrawMsg(msg){
     const req = msg.split(";");
     const letter = req[1];
     const x = req[2];
@@ -49,7 +49,7 @@ function processDrawMessage(msg){
     turn = false;
 }
 
-function processTurnMessage(msg){
+function processTurnMsg(msg){
     turn = (msg.split(";")[1] === _letter);
     const statusBar = document.getElementById("statusBar");
     if(turn){
@@ -59,7 +59,7 @@ function processTurnMessage(msg){
     }
 }
 
-function processWonMessage(msg){
+function processWonMsg(msg){
     const winner = msg.split(";")[1];
     const statusBar = document.getElementById("statusBar");
     if(_letter === winner){
@@ -71,7 +71,7 @@ function processWonMessage(msg){
     socket.close();
 }
 
-function processTieMessage(){
+function processTieMsg(){
     document.getElementById("statusBar").innerText = " TIE !";
     socket.close();
 }
@@ -80,7 +80,7 @@ function processTieMessage(){
 
 socket.onmessage = (msgObject) => {
     const msg = msgObject.data;
-    processMessage(msg);
+    processMsg(msg);
 }
 
 socket.onerror = (err) => {
@@ -89,6 +89,5 @@ socket.onerror = (err) => {
 
 // initiate the game
 socket.onopen = () => {
-    console.log("sent ready request ");
     socket.send("ready");
 }
