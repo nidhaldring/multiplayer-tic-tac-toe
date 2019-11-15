@@ -55,12 +55,15 @@ function processCanDrawMessage(msg){
     if(board[x][y] === 0){
         sendToClients(`draw;${letter};${x};${y}`);
         board[x][y] = letter;
-
+        // check if game is over
         const res = checkBoard();
         if(res === null){
             sendToClients(`turn;${letter === 'x' ? 'o' : 'x'}`);
         }else{
             sendToClients(res);
+            // close all connections
+            clients[0].close();
+            clients[1].close();
         }
     }
 }
