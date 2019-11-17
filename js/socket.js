@@ -1,5 +1,5 @@
 
-const serverURL  = "ws://192.168.43.137:5050";
+const serverURL  = "ws://127.0.0.1:5050";
 const socket = new WebSocket(serverURL); // start connection
 
 let _letter = null;
