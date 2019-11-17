@@ -3,10 +3,13 @@ const Board = require("./board");
 
 class GameServer{
 
-    constructor(){
+    constructor(gameServersHandler){
+        // every msg (except for ready) sent to the game servers hanlder will include an id
+        // to identify which game server shall hanle the request
         this.id = require("crypto").randomBytes(10).toString("Base64");
         this.clients = [];
         this.board = new Board();
+        this.gameServersHandler = gameServersHandler;
     }
 
     hasEnoughClients(){
@@ -24,9 +27,9 @@ class GameServer{
     processReadyMsg(client){
         this.clients.push(client);
         if(this.clients.length === 2){
-            // send clients random letter
-            this.clients[0].sendUTF("start;x");
-            this.clients[1].sendUTF("start;o");
+            // send clients random letter and the id of the server
+            this.clients[0].sendUTF(`start;x;${this.id}`);
+            this.clients[1].sendUTF(`start;o;${this.id}`);
             // choose random client to begin
             const randomLetter = ["x","o"][Math.floor(Math.random() * 2)];
             this.sendToClients(`turn;${randomLetter}`);
@@ -54,9 +57,10 @@ class GameServer{
 
     finish(msg){
         this.sendToClients(msg);
-        // close all connections
         this.clients[0].close();
         this.clients[1].close();
+        // remove the reference of the object so that it can be garbage collected
+        this.gameServersHandler.pop(this);
     }
 
     sendToClients(msg){
