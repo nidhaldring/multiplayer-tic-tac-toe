@@ -1,8 +1,9 @@
 
-const serverURL  = "ws://127.0.0.1:5050";
+const serverURL  = "ws://192.168.43.137:5050";
 const socket = new WebSocket(serverURL); // start connection
 
 let _letter = null;
+let _serverId = null;
 let turn = false;
 
 function sendToServer(msg){
@@ -13,11 +14,11 @@ function sendToServer(msg){
 }
 
 function sendDrawRequest(x,y){
-    sendToServer(`candraw;${_letter};${x};${y}`);
+    sendToServer(`candraw;${_letter};${x};${y};${_serverId}`);
 }
 
 function sendTurnRequest(){
-    sendToServer(`turn;${letter}`);
+    sendToServer(`turn;${letter};${_serverId}`);
 }
 
 function processMsg(msg){
@@ -35,16 +36,14 @@ function processMsg(msg){
 }
 
 function processStartMsg(msg){
-    _letter = msg.split(";")[1];
+    let _;
+    [_,_letter,_serverId] = msg.split(";");
     drawBoard();
     setUpCanvas();
 }
 
 function processDrawMsg(msg){
-    const req = msg.split(";");
-    const letter = req[1];
-    const x = req[2];
-    const y = req[3];
+    let [_,letter,x,y] = msg.split(";");
     drawLetter(letter,x,y);
     turn = false;
 }
