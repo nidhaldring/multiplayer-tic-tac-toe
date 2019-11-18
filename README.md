@@ -1,4 +1,4 @@
-A multiplayer tic tac toe game with support for multiple clients and games !
+A multiplayer tic tac toe game !
 
 
 <img src ="https://raw.githubusercontent.com/nidhaldring/multiplayer-tic-tac-toe/master/screenshots/Screenshot%20from%202019-11-18%2000-43-48.png">
